@@ -49,6 +49,9 @@ class ProjectController extends Controller
         $newProject = new Project();
         $newProject->fill($data);
         $newProject->save();
+        if ($request->has('technologies')) {
+            $newProject->technologies()->attach($request->technologies);
+        }
         return redirect()->route('admin.projects.show', $newProject->slug);
     }
 
@@ -89,6 +92,11 @@ class ProjectController extends Controller
         $slug = Str::slug($request->title, '-');
         $data['slug'] = $slug;
         $project->update($data);
+        if ($request->has('technologies')) {
+            $project->technologies()->sync($request->technologies);
+        } else {
+            $project->technologies()->sync([]);
+        }
         return redirect()->route('admin.projects.show', $project->slug)->with('message', "$project->title has been updated successfully");
     }
 
